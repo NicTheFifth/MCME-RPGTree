@@ -7,19 +7,26 @@
     <groupId>com.mcmiddleearth</groupId>
     <artifactId>RPGTree</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <dependencies>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <jackson.version>2.10.3</jackson.version>
     </properties>
+
+    <repositories>
+        <!-- Spigot repository -->
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <!-- FAWE repository -->
+        <repository>
+            <id>nexus</id>
+            <url>https://mvn.intellectualsites.com/content/repositories/releases/</url>
+        </repository>
+    </repositories>
 
     <build>
         <resources>
@@ -64,5 +71,27 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.1-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intellectualsites.fawe</groupId>
+            <artifactId>FAWE-Core</artifactId>
+            <version>1.16-306</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
 
 </project>
