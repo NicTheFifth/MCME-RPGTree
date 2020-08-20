@@ -1,6 +1,11 @@
 name: ${project.artifactId}
-main: com.mcmiddleearth.mcme.pvp.PVPPlugin
+main: com.mcmiddleearth.mcme.rpgtree.RPGTree
 version: ${project.version}
 authors: [NicoviçTheSixth]
 depend: [FastAsyncWorldEdit]
-api-version: 1.16.1
+api-version: 1.16
+
+commands:
+  RPGTree:
+    description: Use to create trees, treetypes and frames
+    usage: /rpgt <subcommand>

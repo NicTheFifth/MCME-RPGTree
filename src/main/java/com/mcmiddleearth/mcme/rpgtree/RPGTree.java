@@ -18,32 +18,86 @@
  */
 package com.mcmiddleearth.mcme.rpgtree;
 
+import com.google.common.base.Joiner;
+import com.mcmiddleearth.mcme.rpgtree.command.TreeCommand;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.session.SessionManager;
 import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class RPGTree extends JavaPlugin {
 
     @Getter
     private static RPGTree plugin;
-    public Set<TreeType> treeTypes;
+    @Getter @Setter
+    private static Set<TreeType> treeTypes;
     @Getter
     private static File pluginDirectory;
     @Getter
+    private static File growthStateDirectory;
+    @Getter
     private static String FileSep = System.getProperty("file.separator");
+    private static CommandDispatcher<Player> commandDispatcher;
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (sender instanceof Player) {
+            try {
+                if (args.length > 0) {
+                    commandDispatcher.execute(commandDispatcher.parse(String.format("%s %s", label, Joiner.on(" ").join(args)), (Player) sender));
+                } else {
+                    commandDispatcher.execute(commandDispatcher.parse(label, (Player) sender));
+                }
+            } catch (CommandSyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (sender instanceof Player) {
+            try {
+                CompletableFuture<Suggestions> completionSuggestions = commandDispatcher.getCompletionSuggestions(commandDispatcher.parse(getInput(command, args), (Player) sender));
+                return completionSuggestions.get().getList().stream().map(Suggestion::getText).collect(Collectors.toList());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        return new ArrayList<>();
+    }
+    private String getInput(Command command, String[] args) {
+        StringBuilder input = new StringBuilder(command.getName());
+        for (String arg : args) {
+            input.append(CommandDispatcher.ARGUMENT_SEPARATOR).append(arg);
+        }
+        return input.toString();
+    }
 
     @Override
     public void onEnable() {
         Logger.getLogger("RPGTree").log(Level.INFO, "RPGTree loaded correctly");
         plugin = this;
 
-        pluginDirectory = getDataFolder();
+        this.pluginDirectory = getDataFolder();
         if (!pluginDirectory.exists()){
             pluginDirectory.mkdir();
             treeTypes = new HashSet<>();
@@ -57,6 +111,11 @@ public class RPGTree extends JavaPlugin {
                 treeTypes = new HashSet<>();
             }
         }
+        this.growthStateDirectory = new File(getPluginDirectory() + FileSep + "growthStates");
+        if(!growthStateDirectory.exists())
+            growthStateDirectory.mkdir();
+
+        commandDispatcher = new TreeCommand();
 
         treeTypes.forEach(treeType -> new BukkitRunnable() {
             @Override
@@ -65,7 +124,7 @@ public class RPGTree extends JavaPlugin {
                     if (tree.getGrowthStage() < treeType.getMaxGrowthStage()) {
                         // TODO actually grow in server
 
-                        tree.increaseGrowthStage();
+                        tree.increaseGrowthStage(treeType.getType());
                     }
                 });
             }
@@ -75,5 +134,9 @@ public class RPGTree extends JavaPlugin {
     @Override
     public void onDisable() {
         DBManager.updateFile(treeTypes);
+    }
+
+    public static SessionManager getLocalSession(){
+        return WorldEdit.getInstance().getSessionManager();
     }
 }

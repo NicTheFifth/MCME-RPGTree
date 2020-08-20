@@ -18,10 +18,12 @@
  */
 package com.mcmiddleearth.mcme.rpgtree;
 
+import org.bukkit.Bukkit;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.bukkit.Location;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -43,9 +45,9 @@ public class DBManager {
             treeTypeJSON.put("maxGrowthStage", treeType.getMaxGrowthStage());
             treeTypeJSON.put("growthMinutes", treeType.getGrowthMinutes());
             treeType.getTrees().forEach(tree -> {
-                treeJSON.put("x", tree.getX());
-                treeJSON.put("y", tree.getY());
-                treeJSON.put("z", tree.getZ());
+                treeJSON.put("x", tree.getLoc().getX());
+                treeJSON.put("y", tree.getLoc().getY());
+                treeJSON.put("z", tree.getLoc().getZ());
                 treeJSON.put("growthStage", tree.getGrowthStage());
                 treesJSON.add(treeJSON);
             });
@@ -83,9 +85,7 @@ public class DBManager {
                     JSONObject treeJSON = (JSONObject) tree;
                     Tree tempTree = new Tree();
                     tempTree.setGrowthStage((Integer) treeJSON.get("growthStage"));
-                    tempTree.setX((Integer) treeJSON.get("x"));
-                    tempTree.setY((Integer) treeJSON.get("y"));
-                    tempTree.setZ((Integer) treeJSON.get("z"));
+                    tempTree.setLoc(new Location(Bukkit.getWorld("world"), (double) treeJSON.get("x"), (double) treeJSON.get("y"), (double) treeJSON.get("z")));
                     tempTreeType.getTrees().add(tempTree);
 
                 });

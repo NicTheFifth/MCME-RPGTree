@@ -21,8 +21,10 @@ package com.mcmiddleearth.mcme.rpgtree;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+import org.bukkit.entity.Player;
 
 public class TreeType {
     @Getter
@@ -36,4 +38,28 @@ public class TreeType {
     @Getter
     @Setter
     private String type;
+
+    public void TreeType(){}
+    public void TreeType(String treeType){
+        type = treeType;
+    }
+
+    public void addTree(Player p){
+        Tree newTree = new Tree();
+        newTree.setLoc(p.getLocation());
+        trees.add(newTree);
+    }
+
+    public boolean hasAllStates(){
+        File dir = RPGTree.getGrowthStateDirectory();
+        if(growthMinutes == null)
+            return true;
+        for(int m=0; m<growthMinutes; m++){
+            File check = new File(dir+ RPGTree.getFileSep() + type + "_" + m);
+            if(!check.exists()){
+                return false;
+            }
+        }
+        return true;
+    }
 }
