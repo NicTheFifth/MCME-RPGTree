@@ -24,7 +24,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.session.SessionManager;
 import lombok.Getter;
@@ -139,4 +138,5 @@ public class RPGTree extends JavaPlugin {
     public static SessionManager getLocalSession(){
         return WorldEdit.getInstance().getSessionManager();
     }
+    public static WorldEdit getWEPlugin() {return WorldEdit.getInstance().;}
 }

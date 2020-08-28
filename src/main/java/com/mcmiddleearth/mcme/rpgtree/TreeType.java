@@ -31,23 +31,31 @@ public class TreeType {
     private Set<Tree> trees = new HashSet<>();
     @Getter
     @Setter
-    private Integer growthMinutes;
+    private Long growthMinutes;
     @Getter
     @Setter
-    private Integer maxGrowthStage;
+    private Long maxGrowthStage;
     @Getter
     @Setter
     private String type;
 
     public void TreeType(){}
-    public void TreeType(String treeType){
-        type = treeType;
-    }
 
     public void addTree(Player p){
         Tree newTree = new Tree();
         newTree.setLoc(p.getLocation());
+        newTree.setGrowthStage(1L);
+        newTree.setId(trees.size());
         trees.add(newTree);
+    }
+
+    public void removeTree(int toRemove){
+    trees.stream().filter(tree -> tree.getId()>=toRemove).forEach(tree -> {
+        if(tree.getId() == toRemove)
+            trees.remove(tree);
+        else
+            tree.setId(tree.getId() - 1);
+    });
     }
 
     public boolean hasAllStates(){

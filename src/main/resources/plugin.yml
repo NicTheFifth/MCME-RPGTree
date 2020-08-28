@@ -6,6 +6,6 @@ depend: [FastAsyncWorldEdit]
 api-version: 1.16
 
 commands:
-  RPGTree:
+  rpgt:
     description: Use to create trees, treetypes and frames
     usage: /rpgt <subcommand>

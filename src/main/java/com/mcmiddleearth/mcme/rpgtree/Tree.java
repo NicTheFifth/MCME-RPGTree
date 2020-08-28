@@ -21,7 +21,6 @@ package com.mcmiddleearth.mcme.rpgtree;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.World;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,24 +33,28 @@ import java.util.logging.Level;
 public class Tree {
     @Getter
     @Setter
-    private Integer growthStage;
+    private Long growthStage;
     @Getter
     @Setter
     private Location loc;
+    @Getter
+    @Setter
+    private Integer id;
 
-    public void Tree(){growthStage = 0;}
+    public void Tree(){growthStage = 1L;}
 
     public void increaseGrowthStage(String Type) {
         //TODO make growtstates update trees!
         growthStage++;
-        File file = new File(RPGTree.getGrowthStateDirectory()+ RPGTree.getFileSep() + Type + "_" + growthStage);
-        BlockVector3 newVec = null;
+        File file = new File(RPGTree.getGrowthStateDirectory()+ RPGTree.getFileSep() + Type + "_" + growthStage + ".schem");
+        BlockVector3 newVec = BlockVector3.ONE;
         newVec.setComponents(loc.getX(), loc.getY(), loc.getZ());
         if(file.exists()){
         try {
-            EditSession editSession = ClipboardFormats.findByFile(file).load(file).paste((World) loc.getWorld(), newVec, true, false, null);
+            ClipboardFormats.findByFile(file).load(file).paste((World) loc.getWorld(), newVec, true, false, null);
         }catch(Exception e){
             Logger.getLogger("RPGTree").log(Level.WARNING, "Growth update failed.");
+            Logger.getLogger("RPGTree").log(Level.WARNING, e.getMessage());
         }
         }else
             Logger.getLogger("RPGTree").log(Level.WARNING, "Missing growth file " + file.getPath());

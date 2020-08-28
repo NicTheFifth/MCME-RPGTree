@@ -37,14 +37,14 @@ public class DBManager {
     @SuppressWarnings("unchecked")
     public static void updateFile(Set<TreeType> treeTypes){
         JSONArray treeTypesJSON = new JSONArray();
-        JSONObject treeTypeJSON = new JSONObject();
-        JSONArray treesJSON = new JSONArray();
-        JSONObject treeJSON = new JSONObject();
         treeTypes.forEach(treeType -> {
+            JSONObject treeTypeJSON = new JSONObject();
             treeTypeJSON.put("type", treeType.getType());
             treeTypeJSON.put("maxGrowthStage", treeType.getMaxGrowthStage());
             treeTypeJSON.put("growthMinutes", treeType.getGrowthMinutes());
+            JSONArray treesJSON = new JSONArray();
             treeType.getTrees().forEach(tree -> {
+                JSONObject treeJSON = new JSONObject();
                 treeJSON.put("x", tree.getLoc().getX());
                 treeJSON.put("y", tree.getLoc().getY());
                 treeJSON.put("z", tree.getLoc().getZ());
@@ -77,17 +77,23 @@ public class DBManager {
                 JSONObject treeTypeJSON = (JSONObject) treeType;
                 TreeType tempTreeType = new TreeType();
                 tempTreeType.setType((String) treeTypeJSON.get("type"));
-                tempTreeType.setMaxGrowthStage((Integer) treeTypeJSON.get("maxGrowthStage"));
-                tempTreeType.setGrowthMinutes((Integer) treeTypeJSON.get("growthMinutes"));
+                if(treeTypeJSON.get("maxGrowthStage") != null)
+                    tempTreeType.setMaxGrowthStage((Long) treeTypeJSON.get("maxGrowthStage"));
+                else
+                    tempTreeType.setMaxGrowthStage(2L);
+                if(treeTypeJSON.get("growthMinutes") != null)
+                    tempTreeType.setGrowthMinutes((Long) treeTypeJSON.get("growthMinutes"));
+                else
+                    tempTreeType.setGrowthMinutes(2L);
 
                 JSONArray treesJSON = (JSONArray) treeTypeJSON.get("trees");
                 treesJSON.forEach(tree -> {
                     JSONObject treeJSON = (JSONObject) tree;
                     Tree tempTree = new Tree();
-                    tempTree.setGrowthStage((Integer) treeJSON.get("growthStage"));
+                    tempTree.setGrowthStage((Long) treeJSON.get("growthStage"));
                     tempTree.setLoc(new Location(Bukkit.getWorld("world"), (double) treeJSON.get("x"), (double) treeJSON.get("y"), (double) treeJSON.get("z")));
+                    tempTree.setId(tempTreeType.getTrees().size());
                     tempTreeType.getTrees().add(tempTree);
-
                 });
                 treeTypes.add(tempTreeType);
             });
